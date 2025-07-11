@@ -92,7 +92,7 @@ function startFFmpeg(comment, author) {
     '-filter_complex',
       `[1:v]noise=alls=20:allf=t+u[noise];
        [noise][1:v]overlay,` +
-       `drawtext=text='${sanitizedAuthor}':fontfile="${path.join(__dirname, 'comic-sans-mc.ttf')}":x=(w-text_w)/2:y=(h-text_h)/2-22:fontsize=43:fontcolor=brown,
+       `drawtext=text='${sanitizedAuthor}':fontfile="${path.join(__dirname, 'comic-sans-ms.ttf')}":x=(w-text_w)/2:y=(h-text_h)/2-22:fontsize=43:fontcolor=brown,
        drawtext=text='${sanitizedComment}':fontfile="${path.join(__dirname, 'ARIAL.TTF')}":x=(w-text_w)/2:y=(h+text_h)/2:fontsize=30:fontcolor=gray`,
     '-f', 'flv', // FLV format for RTMP
     yt_stream
