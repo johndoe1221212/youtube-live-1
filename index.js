@@ -1,8 +1,8 @@
-
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, onValue } from 'firebase/database';
 import { spawn } from 'child_process';
 import ffmpegPath from 'ffmpeg-static';
+import { fileURLToPath } from 'url';
 import path from 'path';
 
 // Your Firebase config
@@ -22,6 +22,10 @@ const db = getDatabase(app);
 
 // Your YouTube livestream URL and key
 const yt_stream = "rtmp://a.rtmp.youtube.com/live2/ffq1-15r3-jdut-ajsq-8auz";
+
+// Get the directory name using `import.meta.url`
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Variable to hold the FFmpeg process
 let ffmpeg = spawn(ffmpegPath, [
@@ -124,6 +128,7 @@ onValue(latestCommentRef, (snapshot) => {
     startFFmpeg(comment, author);
   }
 });
+
 
 
 
