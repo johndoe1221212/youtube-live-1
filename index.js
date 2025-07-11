@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, onValue } from 'firebase/database';
 import { spawn } from 'child_process';
 import ffmpegPath from 'ffmpeg-static';
+import path from 'path';
 
 // Your Firebase config
 const firebaseConfig = {
@@ -41,6 +42,10 @@ function startFFmpeg(comment, author) {
   const sanitizedComment = escapeText(comment);
   const sanitizedAuthor = escapeText(author);
 
+  // Get the path for the fonts located in the same repo
+  const fontPathComicSans = path.join(__dirname, 'comic-sans-ms.ttf');
+  const fontPathArial = path.join(__dirname, 'ARIAL.TTF');
+
   // Start a new FFmpeg process with the new comment
   console.log("Starting new FFmpeg process with comment:", sanitizedComment);
 
@@ -57,8 +62,8 @@ function startFFmpeg(comment, author) {
     '-filter_complex',
       `[1:v]noise=alls=20:allf=t+u[noise];
        [noise][1:v]overlay,` +
-       `drawtext=text='${sanitizedAuthor}':fontfile='/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf':x=(w-text_w)/2:y=(h-text_h)/2-22:fontsize=43:fontcolor=brown,
-       drawtext=text='${sanitizedComment}':fontfile='/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf':x=(w-text_w)/2:y=(h+text_h)/2:fontsize=30:fontcolor=gray`,
+       `drawtext=text='${sanitizedAuthor}':fontfile='${fontPathComicSans}':x=(w-text_w)/2:y=(h-text_h)/2-22:fontsize=43:fontcolor=brown,
+       drawtext=text='${sanitizedComment}':fontfile='${fontPathArial}':x=(w-text_w)/2:y=(h+text_h)/2:fontsize=30:fontcolor=gray`,
     '-f', 'flv', // FLV format for RTMP
     yt_stream
   ]);
@@ -77,14 +82,6 @@ function startFFmpeg(comment, author) {
   ffmpeg.stdout.on('data', (data) => {
     console.log(`FFmpeg stdout: ${data.toString()}`);
   });
-
-  // Stop FFmpeg after 55 seconds
-  setTimeout(() => {
-    if (ffmpeg) {
-      console.log("Stopping FFmpeg after 55 seconds...");
-      ffmpeg.kill('SIGINT');
-    }
-  }, 55000);  // 55 seconds
 }
 
 // Retrieve data from Firebase Realtime Database
@@ -101,6 +98,7 @@ onValue(latestCommentRef, (snapshot) => {
     startFFmpeg(comment, author);
   }
 });
+
 
 
 
