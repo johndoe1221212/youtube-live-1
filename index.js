@@ -22,35 +22,7 @@ const db = getDatabase(app);
 const yt_stream = "rtmp://a.rtmp.youtube.com/live2/ffq1-15r3-jdut-ajsq-8auz";
 
 // Variable to hold the FFmpeg process
-let ffmpeg = spawn(ffmpegPath, [
-  '-f', 'lavfi',
-  '-i', 'anoisesrc=r=44100',  // White noise audio source with sample rate 44100
-  '-f', 'lavfi',
-  '-i', 'testsrc=s=1280x720',   // Test pattern background
-  '-vcodec', 'libx264',
-  '-acodec', 'aac',
-  '-preset', 'veryfast',
-  '-pix_fmt', 'yuv420p',
-  '-g', '50',
-  '-vf', 'drawtext=text="Loading comments...":fontfile="/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf":x=(w-text_w)/2:y=(h-text_h)/2:fontsize=24:fontcolor=white',
-  '-f', 'flv', // FLV format for RTMP
-  yt_stream
-]);
-
-// Handle FFmpeg stderr (error messages)
-ffmpeg.stderr.on('data', (data) => {
-  console.error(`FFmpeg stderr: ${data.toString()}`);
-});
-
-// Handle FFmpeg process closure
-ffmpeg.on('close', (code) => {
-  console.log(`FFmpeg exited with code ${code}`);
-});
-
-// Handle FFmpeg stdout (success messages)
-ffmpeg.stdout.on('data', (data) => {
-  console.log(`FFmpeg stdout: ${data.toString()}`);
-});
+let ffmpeg = null;
 
 // Function to sanitize and escape special characters for FFmpeg
 function escapeText(text) {
@@ -82,7 +54,6 @@ function startFFmpeg(comment, author) {
     '-preset', 'veryfast',
     '-pix_fmt', 'yuv420p',
     '-g', '50',
-    // Apply noise and overlay with the video stream
     '-filter_complex',
       `[1:v]noise=alls=20:allf=t+u[noise];
        [noise][1:v]overlay,` +
@@ -106,6 +77,14 @@ function startFFmpeg(comment, author) {
   ffmpeg.stdout.on('data', (data) => {
     console.log(`FFmpeg stdout: ${data.toString()}`);
   });
+
+  // Stop FFmpeg after 55 seconds
+  setTimeout(() => {
+    if (ffmpeg) {
+      console.log("Stopping FFmpeg after 55 seconds...");
+      ffmpeg.kill('SIGINT');
+    }
+  }, 55000);  // 55 seconds
 }
 
 // Retrieve data from Firebase Realtime Database
@@ -122,6 +101,7 @@ onValue(latestCommentRef, (snapshot) => {
     startFFmpeg(comment, author);
   }
 });
+
 
 
 
