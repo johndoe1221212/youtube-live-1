@@ -32,7 +32,7 @@ let ffmpeg = spawn(ffmpegPath, [
   '-preset', 'veryfast',
   '-pix_fmt', 'yuv420p',
   '-g', '50',
-  '-vf', 'drawtext=text="Loading comments...":font="LiberationSans-Regular":x=(w-text_w)/2:y=(h-text_h)/2:fontsize=24:fontcolor=white',
+  '-vf', 'drawtext=text="Loading comments...":fontfile="/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf":x=(w-text_w)/2:y=(h-text_h)/2:fontsize=24:fontcolor=white',
   '-f', 'flv', // FLV format for RTMP
   yt_stream
 ]);
@@ -86,8 +86,8 @@ function startFFmpeg(comment, author) {
     '-filter_complex',
       `[1:v]noise=alls=20:allf=t+u[noise];
        [noise][1:v]overlay,` +
-       `drawtext=text='${sanitizedAuthor}':font='LiberationSans-Bold':x=(w-text_w)/2:y=(h-text_h)/2-22:fontsize=43:fontcolor=brown,
-       drawtext=text='${sanitizedComment}':font='LiberationSans-Regular':x=(w-text_w)/2:y=(h+text_h)/2:fontsize=30:fontcolor=gray`,
+       `drawtext=text='${sanitizedAuthor}':fontfile='/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf':x=(w-text_w)/2:y=(h-text_h)/2-22:fontsize=43:fontcolor=brown,
+       drawtext=text='${sanitizedComment}':fontfile='/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf':x=(w-text_w)/2:y=(h+text_h)/2:fontsize=30:fontcolor=gray`,
     '-f', 'flv', // FLV format for RTMP
     yt_stream
   ]);
