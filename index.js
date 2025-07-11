@@ -2,7 +2,6 @@ import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, onValue } from 'firebase/database';
 import { spawn } from 'child_process';
 import ffmpegPath from 'ffmpeg-static';
-import path from 'path';
 
 // Your Firebase config
 const firebaseConfig = {
@@ -22,10 +21,6 @@ const db = getDatabase(app);
 // Your YouTube livestream URL and key
 const yt_stream = "rtmp://a.rtmp.youtube.com/live2/ffq1-15r3-jdut-ajsq-8auz";
 
-// Define absolute paths for fonts
-const authorFontPath = path.join(__dirname, 'comic-sans-ms.ttf');
-const textFontPath = path.join(__dirname, 'ARIAL.TTF');
-
 // Variable to hold the FFmpeg process
 let ffmpeg = spawn(ffmpegPath, [
   '-f', 'lavfi',
@@ -37,7 +32,7 @@ let ffmpeg = spawn(ffmpegPath, [
   '-preset', 'veryfast',
   '-pix_fmt', 'yuv420p',
   '-g', '50',
-  '-vf', `drawtext=text="Loading comments...":fontfile="${textFontPath}":x=(w-text_w)/2:y=(h-text_h)/2:fontsize=24:fontcolor=white`,
+  '-vf', 'drawtext=text="Loading comments...":fontfile="ARIAL.TTF":x=(w-text_w)/2:y=(h-text_h)/2:fontsize=24:fontcolor=white',
   '-f', 'flv', // FLV format for RTMP
   yt_stream
 ]);
@@ -91,8 +86,8 @@ function startFFmpeg(comment, author) {
     '-filter_complex',
       `[1:v]noise=alls=20:allf=t+u[noise];
        [noise][1:v]overlay,` +
-       `drawtext=text='${sanitizedAuthor}':fontfile="${authorFontPath}":x=(w-text_w)/2:y=(h-text_h)/2-22:fontsize=43:fontcolor=brown,
-       drawtext=text='${sanitizedComment}':fontfile="${textFontPath}":x=(w-text_w)/2:y=(h+text_h)/2:fontsize=30:fontcolor=gray`,
+       `drawtext=text='${sanitizedAuthor}':fontfile="comic-sans-ms.ttf":x=(w-text_w)/2:y=(h-text_h)/2-22:fontsize=43:fontcolor=brown,
+       drawtext=text='${sanitizedComment}':fontfile="ARIAL.TTF":x=(w-text_w)/2:y=(h+text_h)/2:fontsize=30:fontcolor=gray`,
     '-f', 'flv', // FLV format for RTMP
     yt_stream
   ]);
