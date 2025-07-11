@@ -1,0 +1,22 @@
+{
+  "name": "livestream-comments",
+  "version": "1.0.0",
+  "description": "A livestream overlay displaying comments from Firebase",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "firebase": "^9.6.1",
+    "ffmpeg-static": "^4.4.1",
+    "child_process": "^1.0.2"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "author": "",
+  "license": "ISC"
+}
+
